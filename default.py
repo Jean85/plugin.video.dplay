@@ -13,8 +13,16 @@ class Dplay(object):
 
     # Shows.
     if len(self._params) == 0:
-      shows = Util.getResponseJson('http://it.dplay.com/api/v2/ajax/modules?items=1000&page_id=32&module_id=26')
-      if shows.isSucceeded:
+      apiUrl = 'http://it.dplay.com/api/v2/ajax/modules?items=50&page_id=32&module_id=26&page={}'
+      page = 0
+      totalPages = 1
+      while page < totalPages:
+        shows = Util.getResponseJson(apiUrl.format(page))
+        if not shows.isSucceeded:
+          break
+        if totalPages == 1: ## TODO: fix this check
+          totalPages = shows.body['total_pages'];
+        page += 1
         for show in shows.body['data']:
           episodes = 0
           for ti in show['taxonomy_items']:
